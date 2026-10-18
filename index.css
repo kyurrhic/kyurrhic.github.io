@@ -65,7 +65,7 @@ a {
   height: 100px; */
 }
 
-#qorsola-pfp {
+#kyrrhic-pfp {
   position: absolute;
   /* top: 50%; */
   top: 47.5%;
@@ -73,6 +73,10 @@ a {
   transform: translate(-125%, -50%);
   align-items: center;
   text-align: center;
+}
+
+ul.socials {
+  list-style: none;
 }
 
 .pixel {
