@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Number Pond: Math Practice for Kids</title>
+<style>
+  :root {
+    --water: #cfeeff;
+    --pond: #2b8fd6;
+    --ink: #17324d;
+    --lily: #4fb870;
+    --sun: #ffc93c;
+    --berry: #ee6a5b;
+    --paper: #fffdf6;
+    --font: ui-rounded, "Arial Rounded MT Bold", "Trebuchet MS", "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: var(--font);
+    color: var(--ink);
+    background: var(--water);
+    background-image: radial-gradient(circle at 15% 20%, #e6f7ff 0 90px, transparent 91px),
+                      radial-gradient(circle at 85% 75%, #e6f7ff 0 140px, transparent 141px);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 24px 16px 48px;
+    font-size: 18px;
+    line-height: 1.5;
+  }
+  main { width: 100%; max-width: 640px; }
+  h1 { font-size: clamp(2.2rem, 7vw, 3.2rem); margin: 0 0 4px; line-height: 1.1; }
+  .tag { margin: 0 0 24px; font-size: 1.1rem; }
+  .pad {
+    background: var(--paper);
+    border: 4px solid var(--ink);
+    border-radius: 28px 28px 28px 8px;
+    padding: 24px;
+  }
+  fieldset { border: 0; padding: 0; margin: 0 0 22px; }
+  legend { font-weight: 700; font-size: 1.15rem; margin-bottom: 10px; padding: 0; }
+  .choices { display: flex; flex-wrap: wrap; gap: 10px; }
+  .choices input { position: absolute; opacity: 0; pointer-events: none; }
+  .choices label {
+    border: 3px solid var(--ink);
+    border-radius: 999px;
+    padding: 8px 18px;
+    cursor: pointer;
+    font-weight: 700;
+    background: #fff;
+    user-select: none;
+  }
+  .choices input:checked + label { background: var(--sun); box-shadow: 0 4px 0 var(--ink); transform: translateY(-2px); }
+  .choices input:focus-visible + label { outline: 4px solid var(--pond); outline-offset: 3px; }
+  button {
+    font: inherit; font-weight: 700; color: #fff; background: var(--pond);
+    border: 3px solid var(--ink); border-radius: 16px; padding: 10px 26px; cursor: pointer;
+    box-shadow: 0 5px 0 var(--ink);
+  }
+  button:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--ink); }
+  button:focus-visible, input[type=text]:focus-visible { outline: 4px solid var(--sun); outline-offset: 3px; }
+  button.go { background: var(--lily); font-size: 1.3rem; padding: 12px 34px; }
+  button.quiet { background: #fff; color: var(--ink); }
+  [hidden] { display: none !important; }
+
+  .bar { display: flex; gap: 6px; margin-bottom: 18px; flex-wrap: wrap; }
+  .pip { width: 26px; height: 26px; border-radius: 50%; border: 3px solid var(--ink); background: #fff; }
+  .pip.right { background: var(--lily); }
+  .pip.wrong { background: var(--berry); }
+  .pip.now { background: var(--sun); }
+
+  .question { font-size: clamp(2.6rem, 12vw, 4.2rem); font-weight: 800; text-align: center; margin: 6px 0 10px; letter-spacing: 2px; }
+  .dots { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; min-height: 28px; margin-bottom: 14px; }
+  .dot { width: 20px; height: 20px; border-radius: 50%; background: var(--pond); border: 2px solid var(--ink); }
+  .dot.b { background: var(--sun); }
+  .dot.gone { background: transparent; border-style: dashed; opacity: .55; }
+  .dots .gap { flex-basis: 100%; height: 0; }
+
+  .answer { display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap; }
+  input[type=text] {
+    font: inherit; font-size: 2rem; font-weight: 800; width: 150px; text-align: center;
+    border: 4px solid var(--ink); border-radius: 16px; padding: 6px; background: #fff; color: var(--ink);
+  }
+  .feedback { min-height: 3.2em; text-align: center; font-weight: 700; margin-top: 16px; font-size: 1.2rem; }
+  .feedback.good { color: #1d7a42; }
+  .feedback.bad { color: #b6382a; }
+  .final { text-align: center; }
+  .final .big { font-size: 3rem; font-weight: 800; margin: 0; }
+  .stars { font-size: 2.6rem; letter-spacing: 8px; margin: 6px 0 14px; }
+  .row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .hop { animation: hop .45s ease; }
+  @keyframes hop { 40% { transform: translateY(-14px); } }
+  @media (prefers-reduced-motion: reduce) { .hop { animation: none; } * { transition: none !important; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Number Pond</h1>
+  <p class="tag">Hop across the pond by solving math problems.</p>
+
+  <section id="setup" class="pad" aria-labelledby="setupTitle">
+    <fieldset>
+      <legend id="setupTitle">What do you want to practice?</legend>
+      <div class="choices" id="ops">
+        <input type="radio" name="op" id="op-add" value="add" checked><label for="op-add">Adding +</label>
+        <input type="radio" name="op" id="op-sub" value="sub"><label for="op-sub">Subtracting −</label>
+        <input type="radio" name="op" id="op-mul" value="mul"><label for="op-mul">Multiplying ×</label>
+        <input type="radio" name="op" id="op-div" value="div"><label for="op-div">Dividing ÷</label>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>How big should the numbers be?</legend>
+      <div class="choices">
+        <input type="radio" name="lvl" id="l1" value="1" checked><label for="l1">Small</label>
+        <input type="radio" name="lvl" id="l2" value="2"><label for="l2">Medium</label>
+        <input type="radio" name="lvl" id="l3" value="3"><label for="l3">Big</label>
+      </div>
+    </fieldset>
+    <button class="go" id="start">Start hopping</button>
+  </section>
+
+  <section id="game" class="pad" hidden aria-live="off">
+    <div class="bar" id="bar" aria-label="Progress"></div>
+    <div class="dots" id="dots" aria-hidden="true"></div>
+    <div class="question" id="q" role="heading" aria-level="2"></div>
+    <div class="answer">
+      <input type="text" id="ans" inputmode="numeric" autocomplete="off" aria-label="Your answer">
+      <button id="check">Check</button>
+    </div>
+    <div class="feedback" id="fb" role="status" aria-live="polite"></div>
+  </section>
+
+  <section id="end" class="pad final" hidden>
+    <p class="big" id="score"></p>
+    <div class="stars" id="stars" aria-hidden="true"></div>
+    <p id="msg"></p>
+    <div class="row">
+      <button class="go" id="again">Play again</button>
+      <button class="quiet" id="change">Change practice</button>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  var TOTAL = 10;
+  var $ = function (id) { return document.getElementById(id); };
+  var st = { op: "add", lvl: 1, i: 0, score: 0, cur: null, tries: 0, results: [] };
+
+  function rnd(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
+
+  function make(op, lvl) {
+    var max = [0, 10, 20, 100][lvl];
+    var f = [0, 5, 10, 12][lvl];
+    var a, b;
+    if (op === "add") { a = rnd(1, max); b = rnd(1, max); return { a: a, b: b, sym: "+", ans: a + b }; }
+    if (op === "sub") { a = rnd(2, max); b = rnd(1, a); return { a: a, b: b, sym: "−", ans: a - b }; }
+    if (op === "mul") { a = rnd(2, f); b = rnd(2, f); return { a: a, b: b, sym: "×", ans: a * b }; }
+    b = rnd(2, f); var r = rnd(1, f); return { a: b * r, b: b, sym: "÷", ans: r };
+  }
+
+  function dot(cls) { var d = document.createElement("span"); d.className = "dot " + cls; return d; }
+
+  function drawDots(q) {
+    var box = $("dots"); box.innerHTML = "";
+    var i;
+    if (q.sym === "+" && q.a + q.b <= 40) {
+      for (i = 0; i < q.a; i++) box.appendChild(dot(""));
+      for (i = 0; i < q.b; i++) box.appendChild(dot("b"));
+    } else if (q.sym === "−" && q.a <= 40) {
+      for (i = 0; i < q.a; i++) box.appendChild(dot(i >= q.a - q.b ? "gone" : ""));
+    } else if (q.sym === "×" && q.a * q.b <= 60) {
+      for (i = 0; i < q.a; i++) {
+        for (var j = 0; j < q.b; j++) box.appendChild(dot(i % 2 ? "b" : ""));
+        var g = document.createElement("span"); g.className = "gap"; box.appendChild(g);
+      }
+    }
+  }
+
+  function drawBar() {
+    var bar = $("bar"); bar.innerHTML = "";
+    for (var i = 0; i < TOTAL; i++) {
+      var p = document.createElement("span");
+      p.className = "pip" + (st.results[i] ? " " + st.results[i] : (i === st.i ? " now" : ""));
+      bar.appendChild(p);
+    }
+  }
+
+  function show(id) {
+    ["setup", "game", "end"].forEach(function (s) { $(s).hidden = s !== id; });
+  }
+
+  function next() {
+    if (st.i >= TOTAL) return finish();
+    st.cur = make(st.op, st.lvl); st.tries = 0;
+    $("q").textContent = st.cur.a + " " + st.cur.sym + " " + st.cur.b + " = ?";
+    drawDots(st.cur); drawBar();
+    $("fb").textContent = ""; $("fb").className = "feedback";
+    $("ans").value = ""; $("ans").disabled = false; $("check").disabled = false;
+    $("ans").focus();
+  }
+
+  function check() {
+    var v = $("ans").value.trim();
+    if (v === "" || isNaN(Number(v))) {
+      $("fb").className = "feedback bad"; $("fb").textContent = "Type a number first."; return;
+    }
+    var fb = $("fb");
+    if (Number(v) === st.cur.ans) {
+      var first = st.tries === 0;
+      if (first) st.score++;
+      st.results[st.i] = first ? "right" : "wrong";
+      fb.className = "feedback good"; fb.textContent = first ? "Yes! Hop!" : "Right! That one took a few tries.";
+      $("q").classList.remove("hop"); void $("q").offsetWidth; $("q").classList.add("hop");
+      lock();
+      st.i++; setTimeout(next, 900);
+    } else {
+      st.tries++;
+      if (st.tries < 2) {
+        fb.className = "feedback bad"; fb.textContent = "Not quite. Try again!";
+        $("ans").select();
+      } else {
+        st.results[st.i] = "wrong";
+        fb.className = "feedback bad"; fb.textContent = "The answer is " + st.cur.ans + ". On to the next one!";
+        lock();
+        st.i++; setTimeout(next, 1800);
+      }
+    }
+  }
+
+  function lock() { $("ans").disabled = true; $("check").disabled = true; }
+
+  function finish() {
+    show("end");
+    $("score").textContent = st.score + " out of " + TOTAL;
+    var stars = st.score >= 9 ? 3 : st.score >= 6 ? 2 : st.score >= 3 ? 1 : 0;
+    $("stars").textContent = "★★★".slice(0, stars) + "☆☆☆".slice(0, 3 - stars);
+    $("msg").textContent = st.score >= 9 ? "Amazing! You crossed the whole pond."
+      : st.score >= 6 ? "Great hopping! Try again to get even more."
+      : "Good practice. Every round makes you faster.";
+    $("again").focus();
+  }
+
+  function start() {
+    st.op = document.querySelector("input[name=op]:checked").value;
+    st.lvl = Number(document.querySelector("input[name=lvl]:checked").value);
+    st.i = 0; st.score = 0; st.results = [];
+    show("game"); next();
+  }
+
+  $("start").addEventListener("click", start);
+  $("again").addEventListener("click", start);
+  $("change").addEventListener("click", function () { show("setup"); $("start").focus(); });
+  $("check").addEventListener("click", check);
+  $("ans").addEventListener("keydown", function (e) { if (e.key === "Enter") check(); });
+})();
+</script>
+</body>
+</html>
+<script async src="/.netlify/scripts/hud?variant=public" data-nf-variant="public" data-netlify-site-id="c974cebe-c023-4615-b53d-71e4fb9f9117" data-app-host="app.netlify.com"></script>
