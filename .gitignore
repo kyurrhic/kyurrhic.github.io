@@ -1,1 +1,6 @@
 private/
+g/actuallyreal/*
+!g/actuallyreal/.gitkeep
+.well-known/
+blank/
+.DS_Store
