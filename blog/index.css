@@ -42,7 +42,7 @@ a {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  align-items: center; 
+  align-items: center;
   text-align: center;
 }
 
@@ -50,4 +50,16 @@ a {
   border-radius: 50%;
   /* width: 100px;
   height: 100px; */
+}
+
+ul.posts {
+  list-style: none;
+}
+
+ul.posts li {
+  margin: 0.4em 0;
+}
+
+.pixel {
+  image-rendering: pixelated;
 }
